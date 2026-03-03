@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>PokeGrade Virtual Kit PRO + Certificate</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --pk-yellow: #ffcb05;
+            --pk-blue: #2a75bb;
+            --pk-darkblue: #3c5aa6;
+            --pk-red: #ff1f1f;
+            --gold: #d4af37;
+            --bg-color: #e0e0e0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%23888888' fill-opacity='0.25'%3E%3Cpath d='M50 10A40 40 0 1 0 50 90A40 40 0 1 0 50 10Z M50 20A30 30 0 0 1 79.4 45L20.6 45A30 30 0 0 1 50 20Z M20.6 55L79.4 55A30 30 0 0 1 20.6 55Z'/%3E%3Ccircle cx='50' cy='50' r='10'/%3E%3C/g%3E%3C/svg%3E");
+            font-family: 'Verdana', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        /* AREA CERTIFICATO (SLAB) */
+        .container {
+            width: 100%;
+            max-width: 450px; /* Ottimizzato per formato Slab/Social */
+            background: #1a1a1a;
+            border: 8px solid var(--pk-yellow);
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            color: white;
+            position: relative;
+        }
+
+        .header-logo { text-align: center; margin-bottom: 15px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .logo-text {
+            font-size: 2.5rem; font-weight: 900; color: var(--pk-yellow); 
+            margin: 0; font-style: italic; text-transform: uppercase;
+            text-shadow: 2px 2px 0 #000, 4px 4px 0 var(--pk-blue);
+        }
+
+        .cert-info { display: flex; justify-content: space-between; font-size: 0.6rem; color: #888; text-transform: uppercase; margin-top: 5px; }
+
+        /* PREVIEW CARTA */
+        .card-preview-area {
+            width: 100%; height: 400px; background: #000;
+            border: 2px solid #333; border-radius: 10px;
+            margin: 15px 0; overflow: hidden; display: flex; align-items: center; justify-content: center;
+        }
+        #previewImg { width: 100%; height: 100%; object-fit: cover; }
+
+        .display-card-name { text-align: center; font-size: 1.2rem; font-weight: bold; color: white; margin-bottom: 10px; text-transform: uppercase;}
+
+        /* GRIGLIA VOTI */
+        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .panel { background: #252525; border-radius: 10px; padding: 10px; border-left: 4px solid var(--pk-blue); }
+        .panel label { font-size: 0.6rem; color: #aaa; display: block; }
+        .panel span { font-size: 1.2rem; font-weight: bold; color: var(--pk-yellow); }
+
+        .final-panel {
+            background: linear-gradient(to right, #000, #222);
+            border: 2px solid var(--gold); border-radius: 15px;
+            padding: 15px; text-align: center;
+        }
+        .hologram-text {
+            font-size: 3.5rem; font-weight: 900;
+            background: linear-gradient(110deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff);
+            background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: holo 3s linear infinite;
+        }
+        @keyframes holo { to { background-position: 200% center; } }
+
+        /* AREA CONTROLLI (NON STAMPATA) */
+        .ui-controls {
+            max-width: 450px; width: 100%; background: white; 
+            margin-top: 20px; padding: 20px; border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1); box-sizing: border-box;
+        }
+        .ui-controls h4 { margin-top: 0; color: var(--pk-blue); border-bottom: 2px solid var(--pk-yellow); }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 5px; }
+        input { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd; box-sizing: border-box; }
+        
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .btn { padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: white; }
+        .btn-save { background: #28a745; }
+        .btn-reset { background: var(--pk-red); }
+    </style>
+</head>
+<body>
+
+<div class="container" id="certificate">
+    <div class="header-logo">
+        <h1 class="logo-text">PokeGrade</h1>
+        <div class="cert-info">
+            <span>DATA: <b id="cert-date">--/--/----</b></span>
+            <span>CERT: <b id="cert-id">#000000</b></span>
+        </div>
+    </div>
+
+    <div class="display-card-name" id="labelCardName">NOME DELLA CARTA</div>
+
+    <div class="card-preview-area">
+        <img id="previewImg" src="https://via.placeholder.com/400x400?text=Carica+Foto" alt="Preview">
+    </div>
+
+    <div class="main-grid">
+        <div class="panel"><label>SURFACE</label><span id="vote-s">10.0</span></div>
+        <div class="panel"><label>CORNERS</label><span id="vote-a">10.0</span></div>
+        <div class="panel"><label>CENTERING</label><span id="vote-c">10.0</span></div>
+        <div class="panel"><label>EDGES</label><span>10.0</span></div>
+    </div>
+
+    <div class="final-panel">
+        <div style="font-size: 0.7rem; color: var(--gold); letter-spacing: 2px;">FINAL GRADE</div>
+        <div class="hologram-text" id="final-total">10.0</div>
+    </div>
+</div>
+
+<div class="ui-controls">
+    <h4>CONFIGURAZIONE</h4>
+    
+    <div class="input-group">
+        <label>Nome Pokémon</label>
+        <input type="text" id="cardName" placeholder="Es: Charizard VMAX" oninput="updateName()">
+    </div>
+
+    <div class="input-group">
+        <label>Foto della Carta</label>
+        <input type="file" id="fileInput" accept="image/*">
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="input-group">
+            <label>Graffi (Surface)</label>
+            <input type="number" id="s1" value="0" step="1" oninput="calculate()">
+        </div>
+        <div class="input-group">
+            <label>Angoli Bianchi</label>
+            <input type="number" id="a1" value="0" step="1" oninput="calculate()">
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label>Millimetri Centratura (SX / DX)</label>
+        <div style="display:flex; gap:5px;">
+            <input type="number" id="msx" value="3.0" step="0.1" oninput="calculate()">
+            <input type="number" id="mdx" value="3.0" step="0.1" oninput="calculate()">
+        </div>
+    </div>
+
+    <div class="btn-row">
+        <button class="btn btn-save" onclick="downloadSlab()">SCARICA PNG</button>
+        <button class="btn btn-reset" onclick="resetAll()">RESET</button>
+    </div>
+</div>
+
+<script>
+// Setup iniziale data e ID
+function setupInfo() {
+    const today = new Date();
+    document.getElementById('cert-date').innerText = today.toLocaleDateString('it-IT');
+    const randomId = Math.floor(100000 + Math.random() * 900000);
+    document.getElementById('cert-id').innerText = "#" + randomId;
+}
+setupInfo();
+
+function updateName() {
+    const name = document.getElementById('cardName').value;
+    document.getElementById('labelCardName').innerText = name || "NOME DELLA CARTA";
+}
+
+// Gestione caricamento immagine
+document.getElementById('fileInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('previewImg').src = event.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+});
+
+function calculate() {
+    // Calcolo Superficie
+    let s_pen = (document.getElementById('s1').value || 0) * 1.5;
+    let subS = Math.max(1, 10 - s_pen);
+
+    // Calcolo Angoli
+    let a_pen = (document.getElementById('a1').value || 0) * 0.5;
+    let subA = Math.max(1, 10 - a_pen);
+
+    // Calcolo Centratura
+    let sx = parseFloat(document.getElementById('msx').value) || 3;
+    let dx = parseFloat(document.getElementById('mdx').value) || 3;
+    let ph = (sx / (sx + dx)) * 100;
+    let subC = Math.max(1, 10 - (Math.abs(50 - ph)) / 2);
+
+    // Update UI
+    document.getElementById('vote-s').innerText = subS.toFixed(1);
+    document.getElementById('vote-a').innerText = subA.toFixed(1);
+    document.getElementById('vote-c').innerText = subC.toFixed(1);
+
+    let finale = (subS + subA + subC + 10) / 4;
+    document.getElementById('final-total').innerText = finale.toFixed(1);
+}
+
+function resetAll() {
+    document.getElementById('cardName').value = "";
+    document.getElementById('s1').value = 0;
+    document.getElementById('a1').value = 0;
+    document.getElementById('msx').value = 3.0;
+    document.getElementById('mdx').value = 3.0;
+    document.getElementById('previewImg').src = "https://via.placeholder.com/400x400?text=Carica+Foto";
+    updateName();
+    setupInfo();
+    calculate();
+}
+
+function downloadSlab() {
+    const container = document.getElementById('certificate');
+    html2canvas(container, { scale: 3 }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'PokeGrade-Slab-' + document.getElementById('cert-id').innerText + '.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    });
+}
+
+calculate();
+</script>
+</body>
+</html>
